@@ -44,8 +44,8 @@ class AuthTest(TestCase):
 
         body = json.loads(login.content)
 
-        logout = self.c.post('/api/authentication/logout',
-                             HTTP_AUTHORIZATION='Bearer ' + body['token'])
+        logout = self.c.get('/api/authentication/logout',
+                            HTTP_AUTHORIZATION='Bearer ' + body['token'])
 
         self.assertEquals(logout.status_code, 200)
 
@@ -63,3 +63,18 @@ class AuthTest(TestCase):
 
         assert 'error' in body
         assert 'code' in body
+
+    def test_signup(self):
+        response = self.c.post('/api/authentication/signup', {
+            'username': 'test2',
+            'email': 'email@test.com',
+            'password': 'password'
+        }, content_type='application/json')
+
+        self.assertEquals(response.status_code, 200)
+
+        body = json.loads(response.content)
+
+        assert 'token' in body
+        assert 'user' in body
+        assert 'session_key' in body
